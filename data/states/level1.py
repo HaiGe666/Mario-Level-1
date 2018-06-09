@@ -2,6 +2,7 @@ from __future__ import division
 
 
 import pygame as pg
+import random
 from .. import setup, tools
 from .. import constants as c
 from .. import game_sound
@@ -17,11 +18,11 @@ from .. components import score
 from .. components import castle_flag
 
 
-class Level1(tools._State):
+class Level1(tools._State): #<- flip_state <- tools.Control
     def __init__(self):
         tools._State.__init__(self)
 
-    def startup(self, current_time, persist):
+    def startup(self, current_time, persist):   #<- flip_state <- tools.Control
         """Called when the State object is created"""
         self.game_info = persist
         self.persist = self.game_info
@@ -36,8 +37,8 @@ class Level1(tools._State):
         self.flag_score_total = 0
 
         self.moving_score_list = []
-        self.overhead_info_display = info.OverheadInfo(self.game_info, c.LEVEL)
-        self.sound_manager = game_sound.Sound(self.overhead_info_display)
+        self.overhead_info_display = info.OverheadInfo(self.game_info, c.LEVEL) #又创建了一个info.OverheadInfo实例
+        self.sound_manager = game_sound.Sound(self.overhead_info_display)   #创建了一个game_sound.Sound实例
 
         self.setup_background()
         self.setup_ground()
@@ -52,10 +53,10 @@ class Level1(tools._State):
         self.setup_spritegroups()
 
 
-    def setup_background(self):
+    def setup_background(self): #<- self.start_up <- flip_state <- tools.Control
         """Sets the background image, rect and scales it to the correct
         proportions"""
-        self.background = setup.GFX['level_1']
+        self.background = setup.GFX['level_1']  #surface
         self.back_rect = self.background.get_rect()
         self.background = pg.transform.scale(self.background,
                                   (int(self.back_rect.width*c.BACKGROUND_MULTIPLER),
@@ -64,28 +65,31 @@ class Level1(tools._State):
         width = self.back_rect.width
         height = self.back_rect.height
 
-        self.level = pg.Surface((width, height)).convert()
+        self.level = pg.Surface((width, height)).convert()  
+        #Call pygame.Surface() to create a new image object. The Surface will be cleared to all black. The only required arguments are the sizes. With no additional arguments, the Surface will be created in a format that best matches the display Surface.
+        #The converted Surface will have no pixel alphas. 
         self.level_rect = self.level.get_rect()
         self.viewport = setup.SCREEN.get_rect(bottom=self.level_rect.bottom)
-        self.viewport.x = self.game_info[c.CAMERA_START_X]
+        # self.viewport.x = self.game_info[c.CAMERA_START_X]  #初始persist在Menu.__init__中确定！！！
+        self.viewport.x = c.VIEWSTART
 
 
-    def setup_ground(self):
-        """Creates collideable, invisible rectangles over top of the ground for
-        sprites to walk on"""
+    def setup_ground(self): #<- self.start_up <- flip_state <- tools.Control
+        """Creates collideable, invisible rectangles over top of the ground for 
+        sprites to walk on"""   #地板透明墙
         ground_rect1 = collider.Collider(0, c.GROUND_HEIGHT,    2953, 60)
         ground_rect2 = collider.Collider(3048, c.GROUND_HEIGHT,  635, 60)
         ground_rect3 = collider.Collider(3819, c.GROUND_HEIGHT, 2735, 60)
         ground_rect4 = collider.Collider(6647, c.GROUND_HEIGHT, 2300, 60)
 
-        self.ground_group = pg.sprite.Group(ground_rect1,
+        self.ground_group = pg.sprite.Group(ground_rect1,   #a container class to hold and manage multiple Sprite objects
                                            ground_rect2,
                                            ground_rect3,
                                            ground_rect4)
 
 
-    def setup_pipes(self):
-        """Create collideable rects for all the pipes"""
+    def setup_pipes(self):  #<- self.start_up <- flip_state <- tools.Control
+        """Create collideable rects for all the pipes"""    #管道透明墙
 
         pipe1 = collider.Collider(1202, 452, 83, 82)
         pipe2 = collider.Collider(1631, 409, 83, 140)
@@ -99,8 +103,8 @@ class Level1(tools._State):
                                           pipe5, pipe6)
 
 
-    def setup_steps(self):
-        """Create collideable rects for all the steps"""
+    def setup_steps(self):  #<- self.start_up <- flip_state <- tools.Control
+        """Create collideable rects for all the steps"""    #堆起来的砖块透明墙
         step1 = collider.Collider(5745, 495, 40, 44)
         step2 = collider.Collider(5788, 452, 40, 44)
         step3 = collider.Collider(5831, 409, 40, 44)
@@ -151,37 +155,40 @@ class Level1(tools._State):
                                           step27)
 
 
-    def setup_bricks(self):
+    def setup_bricks(self): #<- self.start_up <- flip_state <- tools.Control
         """Creates all the breakable bricks for the level.  Coin and
         powerup groups are created so they can be passed to bricks."""
-        self.coin_group = pg.sprite.Group()
-        self.powerup_group = pg.sprite.Group()
-        self.brick_pieces_group = pg.sprite.Group()
+        self.coin_group = pg.sprite.Group() #???
+        self.powerup_group = pg.sprite.Group()  #???
+        self.brick_pieces_group = pg.sprite.Group() #???
 
-        brick1  = bricks.Brick(858,  365)
-        brick2  = bricks.Brick(944,  365)
-        brick3  = bricks.Brick(1030, 365)
-        brick4  = bricks.Brick(3299, 365)
-        brick5  = bricks.Brick(3385, 365)
-        brick6  = bricks.Brick(3430, 193)
-        brick7  = bricks.Brick(3473, 193)
-        brick8  = bricks.Brick(3516, 193)
-        brick9  = bricks.Brick(3559, 193)
-        brick10 = bricks.Brick(3602, 193)
-        brick11 = bricks.Brick(3645, 193)
-        brick12 = bricks.Brick(3688, 193)
-        brick13 = bricks.Brick(3731, 193)
-        brick14 = bricks.Brick(3901, 193)
-        brick15 = bricks.Brick(3944, 193)
-        brick16 = bricks.Brick(3987, 193)
-        brick17 = bricks.Brick(4030, 365, c.SIXCOINS, self.coin_group)
-        brick18 = bricks.Brick(4287, 365)
-        brick19 = bricks.Brick(4330, 365, c.STAR, self.powerup_group)
-        brick20 = bricks.Brick(5058, 365)
-        brick21 = bricks.Brick(5187, 193)
-        brick22 = bricks.Brick(5230, 193)
-        brick23 = bricks.Brick(5273, 193)
-        brick24 = bricks.Brick(5488, 193)
+        brick1  = bricks.Brick(88,  400)
+        brick2  = bricks.Brick(131, 400)
+        brick3  = bricks.Brick(217, 400)
+        brick4  = bricks.Brick(260, 400)
+        brick5  = bricks.Brick(389, 400, c.SIXCOINS, self.coin_group)
+        #缺口
+        brick6  = bricks.Brick(500, 400)
+        brick7  = bricks.Brick(543, 400)
+        brick8  = bricks.Brick(672, 400)
+
+        brick9  = bricks.Brick(self.viewport.left, 250)
+        brick10 = bricks.Brick(self.viewport.left+4*43, 250)
+        brick11 = bricks.Brick(self.viewport.left+5*43, 250)
+        brick12 = bricks.Brick(self.viewport.left+6*43, 250)
+        brick13 = bricks.Brick(self.viewport.left+7*43, 250, c.SIXCOINS, self.coin_group)
+        brick14 = bricks.Brick(self.viewport.left+8*43, 250)
+        brick15 = bricks.Brick(self.viewport.left+9*43, 250)
+        brick16 = bricks.Brick(self.viewport.left+10*43, 250)
+        brick17 = bricks.Brick(self.viewport.left+12*43, 240)
+        
+        brick18 = bricks.Brick(self.viewport.left, 90)
+        brick19 = bricks.Brick(self.viewport.left+4*43, 90)
+        brick20 = bricks.Brick(self.viewport.left+8*43, 90, c.STAR, self.powerup_group)
+        brick21 = bricks.Brick(self.viewport.left+11*43, 90)
+        brick22 = bricks.Brick(3000, 90)
+        brick23 = bricks.Brick(3000, 90)
+        brick24 = bricks.Brick(3000, 90)
         brick25 = bricks.Brick(5574, 193)
         brick26 = bricks.Brick(5617, 193)
         brick27 = bricks.Brick(5531, 365)
@@ -208,30 +215,38 @@ class Level1(tools._State):
                                            brick31)
 
 
-    def setup_coin_boxes(self):
+    def setup_coin_boxes(self): #<- self.start_up <- flip_state <- tools.Control
         """Creates all the coin boxes and puts them in a sprite group"""
-        coin_box1  = coin_box.Coin_box(685, 365, c.COIN, self.coin_group)
-        coin_box2  = coin_box.Coin_box(901, 365, c.MUSHROOM, self.powerup_group)
-        coin_box3  = coin_box.Coin_box(987, 365, c.COIN, self.coin_group)
-        coin_box4  = coin_box.Coin_box(943, 193, c.COIN, self.coin_group)
-        coin_box5  = coin_box.Coin_box(3342, 365, c.MUSHROOM, self.powerup_group)
-        coin_box6  = coin_box.Coin_box(4030, 193, c.COIN, self.coin_group)
-        coin_box7  = coin_box.Coin_box(4544, 365, c.COIN, self.coin_group)
-        coin_box8  = coin_box.Coin_box(4672, 365, c.COIN, self.coin_group)
-        coin_box9  = coin_box.Coin_box(4672, 193, c.MUSHROOM, self.powerup_group)
-        coin_box10 = coin_box.Coin_box(4800, 365, c.COIN, self.coin_group)
-        coin_box11 = coin_box.Coin_box(5531, 193, c.COIN, self.coin_group)
-        coin_box12 = coin_box.Coin_box(7288, 365, c.COIN, self.coin_group)
+        coin_box1  = coin_box.Coin_box(45, 380, c.MUSHROOM, self.powerup_group)
+        coin_box2  = coin_box.Coin_box(174, 400, c.COIN, self.coin_group)
+        coin_box3  = coin_box.Coin_box(303, 400, c.COIN, self.coin_group)
+        coin_box4  = coin_box.Coin_box(346, 400, c.COIN, self.coin_group)
+        coin_box5  = coin_box.Coin_box(586, 400, c.COIN, self.coin_group)
+        coin_box6  = coin_box.Coin_box(715, 400, c.COIN, self.coin_group)
+        coin_box7  = coin_box.Coin_box(758, 400, c.COIN, self.coin_group)
+        coin_box8  = coin_box.Coin_box(801, 380, c.COIN, self.coin_group)
+
+        coin_box9  = coin_box.Coin_box(self.viewport.left+1*43, 250, c.MUSHROOM, self.powerup_group)
+        coin_box10 = coin_box.Coin_box(self.viewport.left+11*43, 240, c.COIN, self.coin_group)
+        coin_box11 = coin_box.Coin_box(self.viewport.left+13*43, 240, c.COIN, self.coin_group)
+        coin_box12 = coin_box.Coin_box(self.viewport.left+14*43, 240, c.COIN, self.coin_group)
+        
+        coin_box13 = coin_box.Coin_box(self.viewport.left+1*43, 90, c.COIN, self.coin_group)
+        coin_box14 = coin_box.Coin_box(self.viewport.left+13*43, 90, c.COIN, self.coin_group)
+        coin_box15 = coin_box.Coin_box(self.viewport.right-2*43, 125, c.COIN, self.coin_group)
+        coin_box16 = coin_box.Coin_box(self.viewport.right-1*43, 125, c.MUSHROOM, self.powerup_group, c.LEFT)
 
         self.coin_box_group = pg.sprite.Group(coin_box1,  coin_box2,
                                               coin_box3,  coin_box4,
                                               coin_box5,  coin_box6,
                                               coin_box7,  coin_box8,
                                               coin_box9,  coin_box10,
-                                              coin_box11, coin_box12)
+                                              coin_box11, coin_box12,
+                                              coin_box13, coin_box14,
+                                              coin_box15, coin_box16)
 
 
-    def setup_flag_pole(self):
+    def setup_flag_pole(self):  #<- self.start_up <- flip_state <- tools.Control
         """Creates the flag pole at the end of the level"""
         self.flag = flagpole.Flag(8505, 100)
 
@@ -262,10 +277,17 @@ class Level1(tools._State):
                                                pole9)
 
 
-    def setup_enemies(self):
+    def setup_enemies(self):    #<- self.start_up <- flip_state <- tools.Control
         """Creates all the enemies and stores them in a list of lists."""
-        goomba0 = enemies.Goomba()
-        goomba1 = enemies.Goomba()
+        goomba_0 = enemies.Goomba(x=400,y=193,direction=c.RIGHT)
+        goomba_1 = enemies.Goomba(x=400,y=400)
+        enemy_group_1 = pg.sprite.Group(goomba_0,goomba_1)
+        self.my_enemy_group_list = [
+            enemy_group_1
+        ]
+        
+        goomba0 = enemies.Goomba(x=self.viewport.right)  #self.view已赋值
+        goomba1 = enemies.Goomba(x=self.viewport.right) #屏幕左边出现
         goomba2 = enemies.Goomba()
         goomba3 = enemies.Goomba()
         goomba4 = enemies.Goomba(193)
@@ -281,14 +303,14 @@ class Level1(tools._State):
         goomba14 = enemies.Goomba()
         goomba15 = enemies.Goomba()
 
-        koopa0 = enemies.Koopa()
+        koopa0 = enemies.Koopa(y=200)
 
         enemy_group1 = pg.sprite.Group(goomba0)
-        enemy_group2 = pg.sprite.Group(goomba1)
+        enemy_group2 = pg.sprite.Group(goomba1,koopa0)
         enemy_group3 = pg.sprite.Group(goomba2, goomba3)
         enemy_group4 = pg.sprite.Group(goomba4, goomba5)
         enemy_group5 = pg.sprite.Group(goomba6, goomba7)
-        enemy_group6 = pg.sprite.Group(koopa0)
+        # enemy_group6 = pg.sprite.Group(koopa0)
         enemy_group7 = pg.sprite.Group(goomba8, goomba9)
         enemy_group8 = pg.sprite.Group(goomba10, goomba11)
         enemy_group9 = pg.sprite.Group(goomba12, goomba13)
@@ -299,25 +321,25 @@ class Level1(tools._State):
                                  enemy_group3,
                                  enemy_group4,
                                  enemy_group5,
-                                 enemy_group6,
+                                #  enemy_group6,
                                  enemy_group7,
                                  enemy_group8,
                                  enemy_group9,
                                  enemy_group10]
 
 
-    def setup_mario(self):
+    def setup_mario(self):  #<- self.start_up <- flip_state <- tools.Control
         """Places Mario at the beginning of the level"""
         self.mario = mario.Mario()
         self.mario.rect.x = self.viewport.x + 110
         self.mario.rect.bottom = c.GROUND_HEIGHT
 
 
-    def setup_checkpoints(self):
+    def setup_checkpoints(self):    #<- self.start_up <- flip_state <- tools.Control
         """Creates invisible checkpoints that when collided will trigger
         the creation of enemies from the self.enemy_group_list"""
-        check1 = checkpoint.Checkpoint(510, "1")
-        check2 = checkpoint.Checkpoint(1400, '2')
+        check1 = checkpoint.Checkpoint(300, "1")
+        check2 = checkpoint.Checkpoint(500, '2')
         check3 = checkpoint.Checkpoint(1740, '3')
         check4 = checkpoint.Checkpoint(3080, '4')
         check5 = checkpoint.Checkpoint(3750, '5')
@@ -337,11 +359,13 @@ class Level1(tools._State):
                                                  check13)
 
 
-    def setup_spritegroups(self):
+    def setup_spritegroups(self):   #<- self.start_up <- flip_state <- tools.Control
         """Sprite groups created for convenience"""
         self.sprites_about_to_die_group = pg.sprite.Group()
         self.shell_group = pg.sprite.Group()
         self.enemy_group = pg.sprite.Group()
+
+        self.enemy_group.add(self.my_enemy_group_list[0])
 
         self.ground_step_pipe_group = pg.sprite.Group(self.ground_group,
                                                       self.pipe_group,
@@ -351,21 +375,21 @@ class Level1(tools._State):
                                                      self.enemy_group)
 
 
-    def update(self, surface, keys, current_time):
+    def update(self, surface, keys, current_time):  #<- (screen,key_pressed,time)-tools.Control.update
         """Updates Entire level using states.  Called by the control object"""
-        self.game_info[c.CURRENT_TIME] = self.current_time = current_time
-        self.handle_states(keys)
+        self.game_info[c.CURRENT_TIME] = self.current_time = current_time   #game_info-perlist-各模块共享的游戏信息，最初在Menu.__init__中初始化
+        self.handle_states(keys)    #
         self.check_if_time_out()
         self.blit_everything(surface)
         self.sound_manager.update(self.game_info, self.mario)
 
 
 
-    def handle_states(self, keys):
+    def handle_states(self, keys):  #<- (key-pressed)-self.update <- tools.Control.update
         """If the level is in a FROZEN state, only mario will update"""
         if self.state == c.FROZEN:
             self.update_during_transition_state(keys)
-        elif self.state == c.NOT_FROZEN:
+        elif self.state == c.NOT_FROZEN:    #初始情况
             self.update_all_sprites(keys)
         elif self.state == c.IN_CASTLE:
             self.update_while_in_castle()
@@ -373,7 +397,7 @@ class Level1(tools._State):
             self.update_flag_and_fireworks()
 
 
-    def update_during_transition_state(self, keys):
+    def update_during_transition_state(self, keys): #<- self.handle_state <- (key-pressed)-self.update <- tools.Control.update
         """Updates mario in a transition state (like becoming big, small,
          or dies). Checks if he leaves the transition state or dies to
          change the level state back"""
@@ -411,7 +435,7 @@ class Level1(tools._State):
             self.check_to_add_flag_score()
         self.flag_pole_group.update()
         self.check_points_check()
-        self.enemy_group.update(self.game_info)
+        self.enemy_group.update(self.game_info) #调用group中每一个sprite的update函数
         self.sprites_about_to_die_group.update(self.game_info, self.viewport)
         self.shell_group.update(self.game_info)
         self.brick_group.update()
@@ -422,9 +446,10 @@ class Level1(tools._State):
         self.adjust_sprite_positions()
         self.check_if_mario_in_transition_state()
         self.check_for_mario_death()
-        self.update_viewport()
+        # self.update_viewport()
         self.overhead_info_display.update(self.game_info, self.mario)
 
+        self.random_high_enemy()
 
     def check_points_check(self):
         """Detect if checkpoint collision occurs, delete checkpoint,
@@ -432,13 +457,18 @@ class Level1(tools._State):
         checkpoint = pg.sprite.spritecollideany(self.mario,
                                                  self.check_point_group)
         if checkpoint:
-            checkpoint.kill()
+            # checkpoint.kill()
 
             for i in range(1,11):
-                if checkpoint.name == str(i):
-                    for index, enemy in enumerate(self.enemy_group_list[i -1]):
-                        enemy.rect.x = self.viewport.right + (index * 60)
-                    self.enemy_group.add(self.enemy_group_list[i-1])
+                if checkpoint.name == str(i):   #找到对应enemy列表
+                    for enemy in self.enemy_group_list[i-1].sprites():  #将enemy_group转换为enemy_list
+                        if not pg.sprite.spritecollideany(enemy,self.enemy_group):  #要出现的enemy不与现有enemy冲突即可出现
+                            self.enemy_group.add(enemy)    #要显示时就加入enemy
+                            self.enemy_group_list[i-1].remove(enemy)
+
+                    if not self.enemy_group_list[i-1]:  #列表enemy放空则删除checkpoint
+                        checkpoint.kill()   #checkpoint对应group怪物更新完成就除去checkpoint
+
 
             if checkpoint.name == '11':
                 self.mario.state = c.FLAGPOLE
@@ -504,7 +534,7 @@ class Level1(tools._State):
         self.adjust_powerup_position()
 
 
-    def adjust_mario_position(self):
+    def adjust_mario_position(self):    #防止mario突破viewport函数！！！
         """Adjusts Mario's position based on his x, y velocities and
         potential collisions"""
         self.last_x_position = self.mario.rect.right
@@ -518,6 +548,9 @@ class Level1(tools._State):
         if self.mario.rect.x < (self.viewport.x + 5):
             self.mario.rect.x = (self.viewport.x + 5)
 
+        if self.mario.rect.right > (self.viewport.right - 5):
+            self.mario.rect.right = (self.viewport.right-5)
+
 
     def check_mario_x_collisions(self):
         """Check for collisions after Mario is moved on the x axis"""
@@ -529,10 +562,12 @@ class Level1(tools._State):
         powerup = pg.sprite.spritecollideany(self.mario, self.powerup_group)
 
         if coin_box:
-            self.adjust_mario_for_x_collisions(coin_box)
+            if coin_box.state != c.BUMPED:
+                self.adjust_mario_for_x_collisions(coin_box)
 
         elif brick:
-            self.adjust_mario_for_x_collisions(brick)
+            if brick.state != c.BUMPED:
+                self.adjust_mario_for_x_collisions(brick)
 
         elif collider:
             self.adjust_mario_for_x_collisions(collider)
@@ -755,13 +790,37 @@ class Level1(tools._State):
             elif coin_box.state == c.OPENED:
                 pass
             setup.SFX['bump'].play()
+            self.check_if_enemy_on_coin_box(coin_box)
             self.mario.y_vel = 7
             self.mario.rect.y = coin_box.rect.bottom
             self.mario.state = c.FALL
+            self.mario.gravity = c.GRAVITY
         else:
             self.mario.y_vel = 0
             self.mario.rect.bottom = coin_box.rect.top
             self.mario.state = c.WALK
+
+    def check_if_enemy_on_coin_box(self, coin_box):
+        """Kills enemy if on a bumped coin box"""
+        coin_box.rect.y -= 5
+
+        enemy = pg.sprite.spritecollideany(coin_box, self.enemy_group)
+
+        if enemy:
+            setup.SFX['kick'].play()
+            self.game_info[c.SCORE] += 100
+            self.moving_score_list.append(
+                score.Score(enemy.rect.centerx - self.viewport.x,
+                            enemy.rect.y,
+                            100))
+            enemy.kill()
+            self.sprites_about_to_die_group.add(enemy)
+            if self.mario.rect.centerx > coin_box.rect.centerx:
+                enemy.start_death_jump('right')
+            else:
+                enemy.start_death_jump('left')
+
+        coin_box.rect.y += 5
 
 
     def adjust_mario_for_y_brick_collisions(self, brick):
@@ -797,6 +856,7 @@ class Level1(tools._State):
             self.mario.y_vel = 7
             self.mario.rect.y = brick.rect.bottom
             self.mario.state = c.FALL
+            self.mario.gravity = c.GRAVITY
 
         else:
             self.mario.y_vel = 0
@@ -921,14 +981,26 @@ class Level1(tools._State):
             self.check_enemy_y_collisions(enemy)
             self.delete_if_off_screen(enemy)
 
+            if enemy.rect.x < (self.viewport.x - 50):   #给怪物上一个边界，比viewport宽一点
+                enemy.rect.x = (self.viewport.x - 50)
+                enemy.direction = c.RIGHT
+                enemy.x_vel = 2
+
+            if enemy.rect.right > (self.viewport.right + 50):
+                enemy.rect.right = (self.viewport.right + 50)
+                enemy.direction = c.LEFT
+                enemy.x_vel = -2
+
 
     def check_enemy_x_collisions(self, enemy):
         """Enemy collisions along the x axis.  Removes enemy from enemy group
         in order to check against all other enemies then adds it back."""
-        enemy.kill()
+        enemy.kill()    #remove the Sprite from all Groups(enemy_group,mario_and_enemy_group)
 
         collider = pg.sprite.spritecollideany(enemy, self.ground_step_pipe_group)
         enemy_collider = pg.sprite.spritecollideany(enemy, self.enemy_group)
+        brick = pg.sprite.spritecollideany(enemy, self.brick_group)
+        coin_box = pg.sprite.spritecollideany(enemy, self.coin_box_group)
 
         if collider:
             if enemy.direction == c.RIGHT:
@@ -954,6 +1026,27 @@ class Level1(tools._State):
                 enemy_collider.direction = c.LEFT
                 enemy.x_vel = 2
                 enemy_collider.x_vel = -2
+        
+        elif brick:
+            if enemy.direction == c.RIGHT:
+                enemy.rect.right = brick.rect.left
+                enemy.direction = c.LEFT
+                enemy.x_vel = -2
+            elif enemy.direction == c.LEFT:
+                enemy.rect.left = brick.rect.right
+                enemy.direction = c.RIGHT
+                enemy.x_vel = 2
+        
+        elif coin_box:
+            if enemy.direction == c.RIGHT:
+                enemy.rect.right = coin_box.rect.left
+                enemy.direction = c.LEFT
+                enemy.x_vel = -2
+            elif enemy.direction == c.LEFT:
+                enemy.rect.left = coin_box.rect.right
+                enemy.direction = c.RIGHT
+                enemy.x_vel = 2
+
 
         self.enemy_group.add(enemy)
         self.mario_and_enemy_group.add(self.enemy_group)
@@ -964,6 +1057,7 @@ class Level1(tools._State):
         collider = pg.sprite.spritecollideany(enemy, self.ground_step_pipe_group)
         brick = pg.sprite.spritecollideany(enemy, self.brick_group)
         coin_box = pg.sprite.spritecollideany(enemy, self.coin_box_group)
+        # enemy_collider = pg.sprite.spritecollideany(enemy, self.enemy_group)    #增加怪物站在怪物上的操作
 
         if collider:
             if enemy.rect.bottom > collider.rect.bottom:
@@ -985,10 +1079,10 @@ class Level1(tools._State):
                 else:
                     enemy.start_death_jump('left')
 
-            elif enemy.rect.x > brick.rect.x:
-                enemy.y_vel = 7
-                enemy.rect.top = brick.rect.bottom
-                enemy.state = c.FALL
+            # elif enemy.rect.x > brick.rect.x:
+            #     enemy.y_vel = 7
+            #     enemy.rect.top = brick.rect.bottom
+            #     enemy.state = c.FALL
             else:
                 enemy.y_vel = 0
                 enemy.rect.bottom = brick.rect.top
@@ -1007,14 +1101,17 @@ class Level1(tools._State):
                 else:
                     enemy.start_death_jump('left')
 
-            elif enemy.rect.x > coin_box.rect.x:
-                enemy.y_vel = 7
-                enemy.rect.top = coin_box.rect.bottom
-                enemy.state = c.FALL
+            # elif enemy.rect.x > coin_box.rect.x:
+            #     enemy.y_vel = 7
+            #     enemy.rect.top = coin_box.rect.bottom
+            #     enemy.state = c.FALL
             else:
                 enemy.y_vel = 0
                 enemy.rect.bottom = coin_box.rect.top
                 enemy.state = c.WALK
+
+        # elif enemy_collider:    #增加怪物站在怪物上的操作
+        #     pass
 
 
         else:
@@ -1248,7 +1345,7 @@ class Level1(tools._State):
 
         collider = pg.sprite.spritecollideany(fireball, collide_group)
         enemy = pg.sprite.spritecollideany(fireball, self.enemy_group)
-        shell = pg.sprite.spritecollideany(fireball, self.shell_group)
+        shell = pg.sprite.spritecollideany(fireball, self.shell_group)  #koopa壳
 
         if collider and (fireball in self.powerup_group):
             fireball.rect.bottom = collider.rect.y
@@ -1356,7 +1453,7 @@ class Level1(tools._State):
             self.next = c.LOAD_SCREEN
 
 
-    def check_if_time_out(self):
+    def check_if_time_out(self):    #<- self.update
         """Check if time has run down to 0"""
         if self.overhead_info_display.time <= 0 \
                 and not self.mario.dead \
@@ -1389,7 +1486,7 @@ class Level1(tools._State):
             self.flag_pole_group.add(castle_flag.Flag(8745, 322))
 
 
-    def update_flag_and_fireworks(self):
+    def update_flag_and_fireworks(self):    #<- self.handle_state
         """Updates the level for the fireworks and castle flag"""
         for score in self.moving_score_list:
             score.update(self.moving_score_list, self.game_info)
@@ -1399,8 +1496,8 @@ class Level1(tools._State):
         self.end_game()
 
 
-    def end_game(self):
-        """End the game"""
+    def end_game(self): #<- self.update_flag_and_fireworks <- self.handle_state
+        """End the game"""  #结束游戏
         if self.flag_timer == 0:
             self.flag_timer = self.current_time
         elif (self.current_time - self.flag_timer) > 2000:
@@ -1410,7 +1507,7 @@ class Level1(tools._State):
             self.done = True
 
 
-    def blit_everything(self, surface):
+    def blit_everything(self, surface): #self.update
         """Blit all sprites to the main surface"""
         self.level.blit(self.background, self.viewport, self.viewport)
         if self.flag_score:
@@ -1432,3 +1529,8 @@ class Level1(tools._State):
             score.draw(surface)
 
 
+    def random_high_enemy(self):
+        if self.current_time%150 == 0:
+            enemy = enemies.Goomba(x=random.randint(self.viewport.left,self.viewport.right-50),y=0,direction=c.RIGHT)
+            if not pg.sprite.spritecollideany(enemy,self.enemy_group):
+                self.enemy_group.add(enemy)

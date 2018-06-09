@@ -11,7 +11,7 @@ class Powerup(pg.sprite.Sprite):
         super(Powerup, self).__init__()
 
 
-    def setup_powerup(self, x, y, name, setup_frames):
+    def setup_powerup(self, x, y, name, setup_frames,direction=c.RIGHT):    #增加方向因素
         """This separate setup function allows me to pass a different
         setup_frames method depending on what the powerup is"""
         self.sprite_sheet = setup.GFX['item_objects']
@@ -25,7 +25,7 @@ class Powerup(pg.sprite.Sprite):
         self.state = c.REVEAL
         self.y_vel = -1
         self.x_vel = 0
-        self.direction = c.RIGHT
+        self.direction = direction
         self.box_height = y
         self.gravity = 1
         self.max_y_vel = 8
@@ -85,9 +85,9 @@ class Powerup(pg.sprite.Sprite):
 
 class Mushroom(Powerup):
     """Powerup that makes Mario become bigger"""
-    def __init__(self, x, y, name='mushroom'):
+    def __init__(self, x, y, name='mushroom',direction=c.RIGHT):    #增加方向因素
         super(Mushroom, self).__init__(x, y)
-        self.setup_powerup(x, y, name, self.setup_frames)
+        self.setup_powerup(x, y, name, self.setup_frames,direction)
 
 
     def setup_frames(self):

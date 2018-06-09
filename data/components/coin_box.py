@@ -10,7 +10,7 @@ from . import coin
 
 class Coin_box(pg.sprite.Sprite):
     """Coin box sprite"""
-    def __init__(self, x, y, contents='coin', group=None):
+    def __init__(self, x, y, contents='coin', group=None, direction=c.RIGHT):
         pg.sprite.Sprite.__init__(self)
         self.sprite_sheet = setup.GFX['tile_set']
         self.frames = []
@@ -29,6 +29,8 @@ class Coin_box(pg.sprite.Sprite):
         self.y_vel = 0
         self.contents = contents
         self.group = group
+
+        self.direction=direction
 
 
     def get_image(self, x, y, width, height):
@@ -109,7 +111,7 @@ class Coin_box(pg.sprite.Sprite):
             self.rect.y = self.rest_height
             self.state = c.OPENED
             if self.contents == 'mushroom':
-                self.group.add(powerups.Mushroom(self.rect.centerx, self.rect.y))
+                self.group.add(powerups.Mushroom(self.rect.centerx, self.rect.y, direction=self.direction))
             elif self.contents == 'fireflower':
                 self.group.add(powerups.FireFlower(self.rect.centerx, self.rect.y))
             elif self.contents == '1up_mushroom':
