@@ -31,3 +31,15 @@ http://www.youtube.com/watch?v=HBbzYKMfx5Y
 DISCLAIMER:
 
 This project is intended for non-commercial educational purposes.
+
+---
+
+2018/6/9
+
+高级编程技术 (python) 期末项目
+
+对游戏模式进行了较大的改动
+
+并修改了固有bug
+
+> henryliu
