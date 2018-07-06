@@ -40,6 +40,8 @@ class Level1(tools._State): #<- flip_state <- tools.Control
         self.overhead_info_display = info.OverheadInfo(self.game_info, c.LEVEL) #又创建了一个info.OverheadInfo实例
         self.sound_manager = game_sound.Sound(self.overhead_info_display)   #创建了一个game_sound.Sound实例
 
+        self.achieve_score = 500 * self.game_info['round'] ** 2    #新增到达分数进入下一关模式
+
         self.setup_background()
         self.setup_ground()
         self.setup_pipes()
@@ -162,88 +164,120 @@ class Level1(tools._State): #<- flip_state <- tools.Control
         self.powerup_group = pg.sprite.Group()  #???
         self.brick_pieces_group = pg.sprite.Group() #???
 
-        brick1  = bricks.Brick(88,  400)
-        brick2  = bricks.Brick(131, 400)
-        brick3  = bricks.Brick(217, 400)
-        brick4  = bricks.Brick(260, 400)
-        brick5  = bricks.Brick(389, 400, c.SIXCOINS, self.coin_group)
-        #缺口
-        brick6  = bricks.Brick(500, 400)
-        brick7  = bricks.Brick(543, 400)
-        brick8  = bricks.Brick(672, 400)
+        self.brick_group = pg.sprite.Group()
 
-        brick9  = bricks.Brick(self.viewport.left, 250)
-        brick10 = bricks.Brick(self.viewport.left+4*43, 250)
-        brick11 = bricks.Brick(self.viewport.left+5*43, 250)
-        brick12 = bricks.Brick(self.viewport.left+6*43, 250)
-        brick13 = bricks.Brick(self.viewport.left+7*43, 250, c.SIXCOINS, self.coin_group)
-        brick14 = bricks.Brick(self.viewport.left+8*43, 250)
-        brick15 = bricks.Brick(self.viewport.left+9*43, 250)
-        brick16 = bricks.Brick(self.viewport.left+10*43, 250)
-        brick17 = bricks.Brick(self.viewport.left+12*43, 240)
-        
-        brick18 = bricks.Brick(self.viewport.left, 90)
-        brick19 = bricks.Brick(self.viewport.left+4*43, 90)
-        brick20 = bricks.Brick(self.viewport.left+8*43, 90, c.STAR, self.powerup_group)
-        brick21 = bricks.Brick(self.viewport.left+11*43, 90)
-        brick22 = bricks.Brick(3000, 90)
-        brick23 = bricks.Brick(3000, 90)
-        brick24 = bricks.Brick(3000, 90)
-        brick25 = bricks.Brick(5574, 193)
-        brick26 = bricks.Brick(5617, 193)
-        brick27 = bricks.Brick(5531, 365)
-        brick28 = bricks.Brick(5574, 365)
-        brick29 = bricks.Brick(7202, 365)
-        brick30 = bricks.Brick(7245, 365)
-        brick31 = bricks.Brick(7331, 365)
+        if self.game_info['round'] == 2:
+            brick1  = bricks.Brick(88,  400)
+            brick2  = bricks.Brick(131, 400)
+            brick3  = bricks.Brick(217, 400)
+            brick4  = bricks.Brick(260, 400)
+            brick5  = bricks.Brick(389, 400, c.SIXCOINS, self.coin_group)
+            #缺口
+            brick6  = bricks.Brick(500, 400)
+            brick7  = bricks.Brick(543, 400)
+            brick8  = bricks.Brick(672, 400)
 
-        self.brick_group = pg.sprite.Group(brick1,  brick2,
-                                           brick3,  brick4,
-                                           brick5,  brick6,
-                                           brick7,  brick8,
-                                           brick9,  brick10,
-                                           brick11, brick12,
-                                           brick13, brick14,
-                                           brick15, brick16,
-                                           brick17, brick18,
-                                           brick19, brick20,
-                                           brick21, brick22,
-                                           brick23, brick24,
-                                           brick25, brick26,
-                                           brick27, brick28,
-                                           brick29, brick30,
-                                           brick31)
+            brick9  = bricks.Brick(self.viewport.left, 250)
+            brick10 = bricks.Brick(self.viewport.left+4*43, 250)
+            brick11 = bricks.Brick(self.viewport.left+5*43, 250)
+            brick12 = bricks.Brick(self.viewport.left+6*43, 250)
+            brick13 = bricks.Brick(self.viewport.left+7*43, 250, c.SIXCOINS, self.coin_group)
+            brick14 = bricks.Brick(self.viewport.left+8*43, 250)
+            brick15 = bricks.Brick(self.viewport.left+9*43, 250)
+            brick16 = bricks.Brick(self.viewport.left+10*43, 250)
+            brick17 = bricks.Brick(self.viewport.left+12*43, 240)
+            
+            brick18 = bricks.Brick(self.viewport.left, 90)
+            brick19 = bricks.Brick(self.viewport.left+4*43, 90)
+            brick20 = bricks.Brick(self.viewport.left+8*43, 90, c.STAR, self.powerup_group)
+            brick21 = bricks.Brick(self.viewport.left+11*43, 90)
+            brick22 = bricks.Brick(3000, 90)
+            brick23 = bricks.Brick(3000, 90)
+            brick24 = bricks.Brick(3000, 90)
+            brick25 = bricks.Brick(5574, 193)
+            brick26 = bricks.Brick(5617, 193)
+            brick27 = bricks.Brick(5531, 365)
+            brick28 = bricks.Brick(5574, 365)
+            brick29 = bricks.Brick(7202, 365)
+            brick30 = bricks.Brick(7245, 365)
+            brick31 = bricks.Brick(7331, 365)
 
+            self.brick_group.add(pg.sprite.Group(brick1,  brick2,
+                                            brick3,  brick4,
+                                            brick5,  brick6,
+                                            brick7,  brick8,
+                                            brick9,  brick10,
+                                            brick11, brick12,
+                                            brick13, brick14,
+                                            brick15, brick16,
+                                            brick17, brick18,
+                                            brick19, brick20,
+                                            brick21, brick22,
+                                            brick23, brick24,
+                                            brick25, brick26,
+                                            brick27, brick28,
+                                            brick29, brick30,
+                                            brick31))
+
+        elif self.game_info['round'] == 3:
+            brick1 = bricks.Brick(self.viewport.left+2*43, 360)
+            brick2 = bricks.Brick(self.viewport.left+3*43, 360)
+            brick3 = bricks.Brick(self.viewport.left+4*43, 360)
+            brick4 = bricks.Brick(self.viewport.left+5*43, 360)
+            
+            brick5 = bricks.Brick(self.viewport.left+13*43, 360)
+            brick6 = bricks.Brick(self.viewport.left+14*43, 360)
+            brick7 = bricks.Brick(self.viewport.left+15*43, 360)
+            brick8 = bricks.Brick(self.viewport.left+16*43, 360)
+
+            brick9 = bricks.Brick(self.viewport.left+8*43, 450)
+            brick10 = bricks.Brick(self.viewport.left+9*43, 450)
+            brick11 = bricks.Brick(self.viewport.left+10*43, 450)
+
+            brick12 = bricks.Brick(self.viewport.left+7*43, 200)
+            brick13 = bricks.Brick(self.viewport.left+8*43, 200)
+            brick14 = bricks.Brick(self.viewport.left+9*43, 200)
+            brick15 = bricks.Brick(self.viewport.left+10*43, 200)
+            brick16 = bricks.Brick(self.viewport.left+11*43, 200)
+            
+            self.brick_group.add(pg.sprite.Group(brick1,brick2,brick3,brick4,brick5,brick6,brick7,brick8,
+                                                brick9,brick10,brick11,brick12,brick13,brick14,brick15,brick16))
 
     def setup_coin_boxes(self): #<- self.start_up <- flip_state <- tools.Control
         """Creates all the coin boxes and puts them in a sprite group"""
-        coin_box1  = coin_box.Coin_box(45, 380, c.MUSHROOM, self.powerup_group)
-        coin_box2  = coin_box.Coin_box(174, 400, c.COIN, self.coin_group)
-        coin_box3  = coin_box.Coin_box(303, 400, c.COIN, self.coin_group)
-        coin_box4  = coin_box.Coin_box(346, 400, c.COIN, self.coin_group)
-        coin_box5  = coin_box.Coin_box(586, 400, c.COIN, self.coin_group)
-        coin_box6  = coin_box.Coin_box(715, 400, c.COIN, self.coin_group)
-        coin_box7  = coin_box.Coin_box(758, 400, c.COIN, self.coin_group)
-        coin_box8  = coin_box.Coin_box(801, 380, c.COIN, self.coin_group)
+        self.coin_box_group = pg.sprite.Group()
 
-        coin_box9  = coin_box.Coin_box(self.viewport.left+1*43, 250, c.MUSHROOM, self.powerup_group)
-        coin_box10 = coin_box.Coin_box(self.viewport.left+11*43, 240, c.COIN, self.coin_group)
-        coin_box11 = coin_box.Coin_box(self.viewport.left+13*43, 240, c.COIN, self.coin_group)
-        coin_box12 = coin_box.Coin_box(self.viewport.left+14*43, 240, c.COIN, self.coin_group)
-        
-        coin_box13 = coin_box.Coin_box(self.viewport.left+1*43, 90, c.COIN, self.coin_group)
-        coin_box14 = coin_box.Coin_box(self.viewport.left+13*43, 90, c.COIN, self.coin_group)
-        coin_box15 = coin_box.Coin_box(self.viewport.right-2*43, 125, c.COIN, self.coin_group)
-        coin_box16 = coin_box.Coin_box(self.viewport.right-1*43, 125, c.MUSHROOM, self.powerup_group, c.LEFT)
+        if self.game_info['round'] == 2:
+            coin_box1  = coin_box.Coin_box(45, 380, c.MUSHROOM, self.powerup_group)
+            coin_box2  = coin_box.Coin_box(174, 400, c.COIN, self.coin_group)
+            coin_box3  = coin_box.Coin_box(303, 400, c.COIN, self.coin_group)
+            coin_box4  = coin_box.Coin_box(346, 400, c.COIN, self.coin_group)
+            coin_box5  = coin_box.Coin_box(586, 400, c.COIN, self.coin_group)
+            coin_box6  = coin_box.Coin_box(715, 400, c.COIN, self.coin_group)
+            coin_box7  = coin_box.Coin_box(758, 400, c.COIN, self.coin_group)
+            coin_box8  = coin_box.Coin_box(801, 380, c.COIN, self.coin_group)
 
-        self.coin_box_group = pg.sprite.Group(coin_box1,  coin_box2,
-                                              coin_box3,  coin_box4,
-                                              coin_box5,  coin_box6,
-                                              coin_box7,  coin_box8,
-                                              coin_box9,  coin_box10,
-                                              coin_box11, coin_box12,
-                                              coin_box13, coin_box14,
-                                              coin_box15, coin_box16)
+            coin_box9  = coin_box.Coin_box(self.viewport.left+1*43, 250, c.MUSHROOM, self.powerup_group)
+            coin_box10 = coin_box.Coin_box(self.viewport.left+11*43, 240, c.COIN, self.coin_group)
+            coin_box11 = coin_box.Coin_box(self.viewport.left+13*43, 240, c.COIN, self.coin_group)
+            coin_box12 = coin_box.Coin_box(self.viewport.left+14*43, 240, c.COIN, self.coin_group)
+            
+            coin_box13 = coin_box.Coin_box(self.viewport.left+1*43, 90, c.COIN, self.coin_group)
+            coin_box14 = coin_box.Coin_box(self.viewport.left+13*43, 90, c.COIN, self.coin_group)
+            coin_box15 = coin_box.Coin_box(self.viewport.right-2*43, 125, c.COIN, self.coin_group)
+            coin_box16 = coin_box.Coin_box(self.viewport.right-1*43, 125, c.MUSHROOM, self.powerup_group, c.LEFT)
+
+            self.coin_box_group.add(pg.sprite.Group(coin_box1,  coin_box2,
+                                                coin_box3,  coin_box4,
+                                                coin_box5,  coin_box6,
+                                                coin_box7,  coin_box8,
+                                                coin_box9,  coin_box10,
+                                                coin_box11, coin_box12,
+                                                coin_box13, coin_box14,
+                                                coin_box15, coin_box16))
+
+        elif self.game_info['round'] == 3:
+            pass
 
 
     def setup_flag_pole(self):  #<- self.start_up <- flip_state <- tools.Control
@@ -380,6 +414,7 @@ class Level1(tools._State): #<- flip_state <- tools.Control
         self.game_info[c.CURRENT_TIME] = self.current_time = current_time   #game_info-perlist-各模块共享的游戏信息，最初在Menu.__init__中初始化
         self.handle_states(keys)    #
         self.check_if_time_out()
+        self.check_if_achieve_score()   #是否到达到下一关分数
         self.blit_everything(surface)
         self.sound_manager.update(self.game_info, self.mario)
 
@@ -1464,7 +1499,7 @@ class Level1(tools._State): #<- flip_state <- tools.Control
 
     def update_viewport(self):
         """Changes the view of the camera"""
-        third = self.viewport.x + self.viewport.w//3
+        third = self.viewport.x + self.viewport.w//3    # width
         mario_center = self.mario.rect.centerx
         mario_right = self.mario.rect.right
 
@@ -1530,7 +1565,19 @@ class Level1(tools._State): #<- flip_state <- tools.Control
 
 
     def random_high_enemy(self):
-        if self.current_time%150 == 0:
+        if self.current_time%300 == 0:
             enemy = enemies.Goomba(x=random.randint(self.viewport.left,self.viewport.right-50),y=0,direction=c.RIGHT)
             if not pg.sprite.spritecollideany(enemy,self.enemy_group):
                 self.enemy_group.add(enemy)
+
+        if self.current_time%2000 == 0:
+            enemy = enemies.Koopa(x=random.randint(self.viewport.left,self.viewport.right-50),y=0,direction=c.LEFT)
+            if not pg.sprite.spritecollideany(enemy,self.enemy_group):
+                self.enemy_group.add(enemy)
+
+    def check_if_achieve_score(self):
+        if(self.game_info[c.SCORE] >= self.achieve_score):
+            self.next = c.LOAD_SCREEN
+            self.done = True
+            self.game_info[c.SCORE] = 0
+            self.game_info['round'] += 1
