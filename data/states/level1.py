@@ -1509,7 +1509,7 @@ class Level1(tools._State): #<- flip_state <- tools.Control
 
 
     def update_viewport(self):
-        if self.current_time % 1 == 0:
+        if self.current_time % 3 == 0:
             self.viewport.y -= 1
         # """Changes the view of the camera"""
         # third = self.viewport.x + self.viewport.w//3    # width
