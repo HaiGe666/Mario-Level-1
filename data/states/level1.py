@@ -166,6 +166,14 @@ class Level1(tools._State): #<- flip_state <- tools.Control
 
         self.brick_group = pg.sprite.Group()
 
+        if self.game_info['round'] == 1:
+            brick1 = bricks.Brick(88,  c.GROUND_HEIGHT - 100)
+            brick2 = bricks.Brick(120,  c.GROUND_HEIGHT - 200)
+            brick3 = bricks.Brick(140,  c.GROUND_HEIGHT - 300)
+            brick4 = bricks.Brick(160,  c.GROUND_HEIGHT - 400)
+            brick5 = bricks.Brick(180,  c.GROUND_HEIGHT - 500)
+            self.brick_group.add(pg.sprite.Group(brick1,brick2,brick3,brick4,brick5))
+
         if self.game_info['round'] == 2:
             brick1  = bricks.Brick(88,  400)
             brick2  = bricks.Brick(131, 400)
@@ -277,7 +285,10 @@ class Level1(tools._State): #<- flip_state <- tools.Control
                                                 coin_box15, coin_box16))
 
         elif self.game_info['round'] == 3:
-            pass
+            coin_box1  = coin_box.Coin_box(self.viewport.left+3*43, 250, c.MUSHROOM, self.powerup_group)
+            coin_box2  = coin_box.Coin_box(self.viewport.left+15*43, 250, c.MUSHROOM, self.powerup_group, c.LEFT)
+
+            self.coin_box_group.add(pg.sprite.Group(coin_box1,coin_box2))
 
 
     def setup_flag_pole(self):  #<- self.start_up <- flip_state <- tools.Control
@@ -481,7 +492,7 @@ class Level1(tools._State): #<- flip_state <- tools.Control
         self.adjust_sprite_positions()
         self.check_if_mario_in_transition_state()
         self.check_for_mario_death()
-        # self.update_viewport()
+        self.update_viewport()
         self.overhead_info_display.update(self.game_info, self.mario)
 
         self.random_high_enemy()
@@ -1448,7 +1459,7 @@ class Level1(tools._State): #<- flip_state <- tools.Control
 
     def check_for_mario_death(self):
         """Restarts the level if Mario is dead"""
-        if self.mario.rect.y > c.SCREEN_HEIGHT and not self.mario.in_castle:
+        if self.mario.rect.y > self.viewport.bottom and not self.mario.in_castle:
             self.mario.dead = True
             self.mario.x_vel = 0
             self.state = c.FROZEN
@@ -1498,16 +1509,18 @@ class Level1(tools._State): #<- flip_state <- tools.Control
 
 
     def update_viewport(self):
-        """Changes the view of the camera"""
-        third = self.viewport.x + self.viewport.w//3    # width
-        mario_center = self.mario.rect.centerx
-        mario_right = self.mario.rect.right
+        if self.current_time % 1 == 0:
+            self.viewport.y -= 1
+        # """Changes the view of the camera"""
+        # third = self.viewport.x + self.viewport.w//3    # width
+        # mario_center = self.mario.rect.centerx
+        # mario_right = self.mario.rect.right
 
-        if self.mario.x_vel > 0 and mario_center >= third:
-            mult = 0.5 if mario_right < self.viewport.centerx else 1
-            new = self.viewport.x + mult * self.mario.x_vel
-            highest = self.level_rect.w - self.viewport.w
-            self.viewport.x = min(highest, new)
+        # if self.mario.x_vel > 0 and mario_center >= third:
+        #     mult = 0.5 if mario_right < self.viewport.centerx else 1
+        #     new = self.viewport.x + mult * self.mario.x_vel
+        #     highest = self.level_rect.w - self.viewport.w
+        #     self.viewport.x = min(highest, new)
 
 
     def update_while_in_castle(self):

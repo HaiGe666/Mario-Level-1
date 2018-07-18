@@ -16,7 +16,7 @@ class Brick(pg.sprite.Sprite):
 
         self.frames = []
         self.frame_index = 0
-        self.setup_frames()
+        self.setup_frames() #拿两种方块surface
         self.image = self.frames[self.frame_index]
         self.rect = self.image.get_rect()
         self.rect.x = x
@@ -25,8 +25,8 @@ class Brick(pg.sprite.Sprite):
         self.bumped_up = False
         self.rest_height = y
         self.state = c.RESTING
-        self.y_vel = 0
-        self.gravity = 1.2
+        self.y_vel = 0  #????
+        self.gravity = 1.2  #????
         self.name = name
         self.contents = contents
         self.setup_contents()
@@ -34,7 +34,7 @@ class Brick(pg.sprite.Sprite):
         self.powerup_in_box = True
 
 
-    def get_image(self, x, y, width, height):
+    def get_image(self, x, y, width, height):   #<- setup_frames <- self.__init__
         """Extracts the image from the sprite sheet"""
         image = pg.Surface([width, height]).convert()
         rect = image.get_rect()
@@ -47,7 +47,7 @@ class Brick(pg.sprite.Sprite):
         return image
 
 
-    def setup_frames(self):
+    def setup_frames(self): #<- self.__init__
         """Set the frames to a list"""
         self.frames.append(self.get_image(16, 0, 16, 16))
         self.frames.append(self.get_image(432, 0, 16, 16))
@@ -64,6 +64,7 @@ class Brick(pg.sprite.Sprite):
     def update(self):
         """Updates the brick"""
         self.handle_states()
+        #self.rect.y += 1
 
 
     def handle_states(self):
