@@ -163,99 +163,119 @@ class Level1(tools._State): #<- flip_state <- tools.Control
         self.coin_group = pg.sprite.Group() #???
         self.powerup_group = pg.sprite.Group()  #???
         self.brick_pieces_group = pg.sprite.Group() #???
+        self.coin_box_group = pg.sprite.Group()
 
         self.brick_group = pg.sprite.Group()
 
-        if self.game_info['round'] == 1:
-            brick1 = bricks.Brick(88,  c.GROUND_HEIGHT - 100)
-            brick2 = bricks.Brick(120,  c.GROUND_HEIGHT - 200)
-            brick3 = bricks.Brick(140,  c.GROUND_HEIGHT - 300)
-            brick4 = bricks.Brick(160,  c.GROUND_HEIGHT - 400)
-            brick5 = bricks.Brick(180,  c.GROUND_HEIGHT - 500)
-            self.brick_group.add(pg.sprite.Group(brick1,brick2,brick3,brick4,brick5))
+        if self.game_info['round'] < 5:
+            start_col = 0
+            for row in range(c.GROUND_HEIGHT - 100, 0, -140):
+                for col in range(start_col, 900, 43):
+                    if random.randint(0,100)%2 == 0:
+                        if random.randint(0,100) % 4 == 0:
+                            self.brick_group.add(bricks.Brick(col, row))
+                        elif random.randint(0,100) % 4 == 1:
+                            self.brick_group.add(bricks.Brick(col, row, c.STAR, self.powerup_group))
+                        elif random.randint(0,100) % 4 == 2:
+                            self.coin_box_group.add(coin_box.Coin_box(col, row, c.MUSHROOM, self.powerup_group))
+                        elif random.randint(0,100) % 4 == 3:
+                            self.coin_box_group.add(coin_box.Coin_box(col, row, c.COIN, self.coin_group))
+                start_col = 0 if start_col == 21 else 21
 
-        if self.game_info['round'] == 2:
-            brick1  = bricks.Brick(88,  400)
-            brick2  = bricks.Brick(131, 400)
-            brick3  = bricks.Brick(217, 400)
-            brick4  = bricks.Brick(260, 400)
-            brick5  = bricks.Brick(389, 400, c.SIXCOINS, self.coin_group)
-            #缺口
-            brick6  = bricks.Brick(500, 400)
-            brick7  = bricks.Brick(543, 400)
-            brick8  = bricks.Brick(672, 400)
+            # brick1 = bricks.Brick(88,  c.GROUND_HEIGHT - 100)
+            # brick2 = bricks.Brick(120,  c.GROUND_HEIGHT - 200)
+            # brick3 = bricks.Brick(140,  c.GROUND_HEIGHT - 300)
+            # brick4 = bricks.Brick(160,  c.GROUND_HEIGHT - 400)
+            # brick5 = bricks.Brick(180,  c.GROUND_HEIGHT - 500)
+            # brick6 = bricks.Brick(200,  c.GROUND_HEIGHT - 600)
+            # brick7 = bricks.Brick(220,  c.GROUND_HEIGHT - 700)
+            # self.brick_group.add(pg.sprite.Group(brick1,brick2,
+            #                                      brick3,brick4,
+            #                                      brick5,brick6,
+            #                                      brick7))
 
-            brick9  = bricks.Brick(self.viewport.left, 250)
-            brick10 = bricks.Brick(self.viewport.left+4*43, 250)
-            brick11 = bricks.Brick(self.viewport.left+5*43, 250)
-            brick12 = bricks.Brick(self.viewport.left+6*43, 250)
-            brick13 = bricks.Brick(self.viewport.left+7*43, 250, c.SIXCOINS, self.coin_group)
-            brick14 = bricks.Brick(self.viewport.left+8*43, 250)
-            brick15 = bricks.Brick(self.viewport.left+9*43, 250)
-            brick16 = bricks.Brick(self.viewport.left+10*43, 250)
-            brick17 = bricks.Brick(self.viewport.left+12*43, 240)
+        # if self.game_info['round'] >6:
+        #     brick1  = bricks.Brick(88,  400)
+        #     brick2  = bricks.Brick(131, 400)
+        #     brick3  = bricks.Brick(217, 400)
+        #     brick4  = bricks.Brick(260, 400)
+        #     brick5  = bricks.Brick(389, 400, c.SIXCOINS, self.coin_group)
+        #     #缺口
+        #     brick6  = bricks.Brick(500, 400)
+        #     brick7  = bricks.Brick(543, 400)
+        #     brick8  = bricks.Brick(672, 400)
+
+        #     brick9  = bricks.Brick(self.viewport.left, 250)
+        #     brick10 = bricks.Brick(self.viewport.left+4*43, 250)
+        #     brick11 = bricks.Brick(self.viewport.left+5*43, 250)
+        #     brick12 = bricks.Brick(self.viewport.left+6*43, 250)
+        #     brick13 = bricks.Brick(self.viewport.left+7*43, 250, c.SIXCOINS, self.coin_group)
+        #     brick14 = bricks.Brick(self.viewport.left+8*43, 250)
+        #     brick15 = bricks.Brick(self.viewport.left+9*43, 250)
+        #     brick16 = bricks.Brick(self.viewport.left+10*43, 250)
+        #     brick17 = bricks.Brick(self.viewport.left+12*43, 240)
             
-            brick18 = bricks.Brick(self.viewport.left, 90)
-            brick19 = bricks.Brick(self.viewport.left+4*43, 90)
-            brick20 = bricks.Brick(self.viewport.left+8*43, 90, c.STAR, self.powerup_group)
-            brick21 = bricks.Brick(self.viewport.left+11*43, 90)
-            brick22 = bricks.Brick(3000, 90)
-            brick23 = bricks.Brick(3000, 90)
-            brick24 = bricks.Brick(3000, 90)
-            brick25 = bricks.Brick(5574, 193)
-            brick26 = bricks.Brick(5617, 193)
-            brick27 = bricks.Brick(5531, 365)
-            brick28 = bricks.Brick(5574, 365)
-            brick29 = bricks.Brick(7202, 365)
-            brick30 = bricks.Brick(7245, 365)
-            brick31 = bricks.Brick(7331, 365)
+        #     brick18 = bricks.Brick(self.viewport.left, 90)
+        #     brick19 = bricks.Brick(self.viewport.left+4*43, 90)
+        #     brick20 = bricks.Brick(self.viewport.left+8*43, 90, c.STAR, self.powerup_group)
+        #     brick21 = bricks.Brick(self.viewport.left+11*43, 90)
+        #     brick22 = bricks.Brick(3000, 90)
+        #     brick23 = bricks.Brick(3000, 90)
+        #     brick24 = bricks.Brick(3000, 90)
+        #     brick25 = bricks.Brick(5574, 193)
+        #     brick26 = bricks.Brick(5617, 193)
+        #     brick27 = bricks.Brick(5531, 365)
+        #     brick28 = bricks.Brick(5574, 365)
+        #     brick29 = bricks.Brick(7202, 365)
+        #     brick30 = bricks.Brick(7245, 365)
+        #     brick31 = bricks.Brick(7331, 365)
 
-            self.brick_group.add(pg.sprite.Group(brick1,  brick2,
-                                            brick3,  brick4,
-                                            brick5,  brick6,
-                                            brick7,  brick8,
-                                            brick9,  brick10,
-                                            brick11, brick12,
-                                            brick13, brick14,
-                                            brick15, brick16,
-                                            brick17, brick18,
-                                            brick19, brick20,
-                                            brick21, brick22,
-                                            brick23, brick24,
-                                            brick25, brick26,
-                                            brick27, brick28,
-                                            brick29, brick30,
-                                            brick31))
+        #     self.brick_group.add(pg.sprite.Group(brick1,  brick2,
+        #                                     brick3,  brick4,
+        #                                     brick5,  brick6,
+        #                                     brick7,  brick8,
+        #                                     brick9,  brick10,
+        #                                     brick11, brick12,
+        #                                     brick13, brick14,
+        #                                     brick15, brick16,
+        #                                     brick17, brick18,
+        #                                     brick19, brick20,
+        #                                     brick21, brick22,
+        #                                     brick23, brick24,
+        #                                     brick25, brick26,
+        #                                     brick27, brick28,
+        #                                     brick29, brick30,
+        #                                     brick31))
 
-        elif self.game_info['round'] == 3:
-            brick1 = bricks.Brick(self.viewport.left+2*43, 360)
-            brick2 = bricks.Brick(self.viewport.left+3*43, 360)
-            brick3 = bricks.Brick(self.viewport.left+4*43, 360)
-            brick4 = bricks.Brick(self.viewport.left+5*43, 360)
+        # elif self.game_info['round'] > 6:
+        #     brick1 = bricks.Brick(self.viewport.left+2*43, 360)
+        #     brick2 = bricks.Brick(self.viewport.left+3*43, 360)
+        #     brick3 = bricks.Brick(self.viewport.left+4*43, 360)
+        #     brick4 = bricks.Brick(self.viewport.left+5*43, 360)
             
-            brick5 = bricks.Brick(self.viewport.left+13*43, 360)
-            brick6 = bricks.Brick(self.viewport.left+14*43, 360)
-            brick7 = bricks.Brick(self.viewport.left+15*43, 360)
-            brick8 = bricks.Brick(self.viewport.left+16*43, 360)
+        #     brick5 = bricks.Brick(self.viewport.left+13*43, 360)
+        #     brick6 = bricks.Brick(self.viewport.left+14*43, 360)
+        #     brick7 = bricks.Brick(self.viewport.left+15*43, 360)
+        #     brick8 = bricks.Brick(self.viewport.left+16*43, 360)
 
-            brick9 = bricks.Brick(self.viewport.left+8*43, 450)
-            brick10 = bricks.Brick(self.viewport.left+9*43, 450)
-            brick11 = bricks.Brick(self.viewport.left+10*43, 450)
+        #     brick9 = bricks.Brick(self.viewport.left+8*43, 450)
+        #     brick10 = bricks.Brick(self.viewport.left+9*43, 450)
+        #     brick11 = bricks.Brick(self.viewport.left+10*43, 450)
 
-            brick12 = bricks.Brick(self.viewport.left+7*43, 200)
-            brick13 = bricks.Brick(self.viewport.left+8*43, 200)
-            brick14 = bricks.Brick(self.viewport.left+9*43, 200)
-            brick15 = bricks.Brick(self.viewport.left+10*43, 200)
-            brick16 = bricks.Brick(self.viewport.left+11*43, 200)
+        #     brick12 = bricks.Brick(self.viewport.left+7*43, 200)
+        #     brick13 = bricks.Brick(self.viewport.left+8*43, 200)
+        #     brick14 = bricks.Brick(self.viewport.left+9*43, 200)
+        #     brick15 = bricks.Brick(self.viewport.left+10*43, 200)
+        #     brick16 = bricks.Brick(self.viewport.left+11*43, 200)
             
-            self.brick_group.add(pg.sprite.Group(brick1,brick2,brick3,brick4,brick5,brick6,brick7,brick8,
-                                                brick9,brick10,brick11,brick12,brick13,brick14,brick15,brick16))
+        #     self.brick_group.add(pg.sprite.Group(brick1,brick2,brick3,brick4,brick5,brick6,brick7,brick8,
+        #                                         brick9,brick10,brick11,brick12,brick13,brick14,brick15,brick16))
 
     def setup_coin_boxes(self): #<- self.start_up <- flip_state <- tools.Control
         """Creates all the coin boxes and puts them in a sprite group"""
-        self.coin_box_group = pg.sprite.Group()
+        # self.coin_box_group = pg.sprite.Group()
 
-        if self.game_info['round'] == 2:
+        if self.game_info['round'] > 6:
             coin_box1  = coin_box.Coin_box(45, 380, c.MUSHROOM, self.powerup_group)
             coin_box2  = coin_box.Coin_box(174, 400, c.COIN, self.coin_group)
             coin_box3  = coin_box.Coin_box(303, 400, c.COIN, self.coin_group)
@@ -284,7 +304,7 @@ class Level1(tools._State): #<- flip_state <- tools.Control
                                                 coin_box13, coin_box14,
                                                 coin_box15, coin_box16))
 
-        elif self.game_info['round'] == 3:
+        elif self.game_info['round'] > 7:
             coin_box1  = coin_box.Coin_box(self.viewport.left+3*43, 250, c.MUSHROOM, self.powerup_group)
             coin_box2  = coin_box.Coin_box(self.viewport.left+15*43, 250, c.MUSHROOM, self.powerup_group, c.LEFT)
 
@@ -1509,7 +1529,7 @@ class Level1(tools._State): #<- flip_state <- tools.Control
 
 
     def update_viewport(self):
-        if self.current_time % 1 == 0:
+        if self.current_time % 3 == 0:
             self.viewport.y -= 1
         # """Changes the view of the camera"""
         # third = self.viewport.x + self.viewport.w//3    # width
