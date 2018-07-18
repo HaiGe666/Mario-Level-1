@@ -107,7 +107,7 @@ class _State(object):
 
 
 
-def load_all_gfx(directory, colorkey=(255,0,255), accept=('.png', 'jpg', 'bmp')):   #是不是缺了.号
+def load_all_gfx(directory, colorkey=(255,0,255), accept=('.png', '.jpg', '.bmp')):   #是不是缺了.号
     """colorkey=(255,0,255)是洋红色，目的应该是将title_screen.png的背景色设置成透明"""
     graphics = {}
     for pic in os.listdir(directory):

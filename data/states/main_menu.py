@@ -97,8 +97,8 @@ class Menu(tools._State):
         self.overhead_info.update(self.game_info)   #更新分数、金币、闪烁的金币表示信息
 
         surface.blit(self.background, self.viewport, self.viewport) #blit(source,dest,area,special,special_flag)
-        surface.blit(self.image_dict['GAME_NAME_BOX'][0],
-                     self.image_dict['GAME_NAME_BOX'][1])
+        #surface.blit(self.image_dict['GAME_NAME_BOX'][0],
+                     #self.image_dict['GAME_NAME_BOX'][1])
         surface.blit(self.mario.image, self.mario.rect)
         surface.blit(self.cursor.image, self.cursor.rect)
         self.overhead_info.draw(surface)    #!!!!!!!
