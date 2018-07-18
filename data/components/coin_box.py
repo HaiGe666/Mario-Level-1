@@ -12,7 +12,7 @@ class Coin_box(pg.sprite.Sprite):
     """Coin box sprite"""
     def __init__(self, x, y, contents='coin', group=None, direction=c.RIGHT):
         pg.sprite.Sprite.__init__(self)
-        self.sprite_sheet = setup.GFX['tile_set']
+        self.sprite_sheet = setup.GFX['new_set']
         self.frames = []
         self.setup_frames()
         self.frame_index = 0
@@ -50,13 +50,13 @@ class Coin_box(pg.sprite.Sprite):
     def setup_frames(self):
         """Create frame list"""
         self.frames.append(
-            self.get_image(384, 0, 16, 16))
+            self.get_image(96, 48, 16, 16))
         self.frames.append(
-            self.get_image(400, 0, 16, 16))
+            self.get_image(96, 48, 16, 16))
         self.frames.append(
-            self.get_image(416, 0, 16, 16))
+            self.get_image(96, 48, 16, 16))
         self.frames.append(
-            self.get_image(432, 0, 16, 16))
+            self.get_image(112, 48, 16, 16))
 
 
     def update(self, game_info):
