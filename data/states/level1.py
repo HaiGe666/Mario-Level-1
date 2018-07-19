@@ -169,7 +169,7 @@ class Level1(tools._State): #<- flip_state <- tools.Control
 
         if self.game_info['round'] < 5:
             start_col = 0
-            for row in range(c.GROUND_HEIGHT - 100, 0, -140):
+            for row in range(c.GROUND_HEIGHT - 100, 200, -140):
                 for col in range(start_col, 900, 43):
                     if random.randint(0,100)%2 == 0:
                         if random.randint(0,100) % 4 == 0:
@@ -313,33 +313,19 @@ class Level1(tools._State): #<- flip_state <- tools.Control
 
     def setup_flag_pole(self):  #<- self.start_up <- flip_state <- tools.Control
         """Creates the flag pole at the end of the level"""
-        self.flag = flagpole.Flag(8505, 100)
+        self.flag = flagpole.Flag(450, 97)
 
-        pole0 = flagpole.Pole(8505, 97)
-        pole1 = flagpole.Pole(8505, 137)
-        pole2 = flagpole.Pole(8505, 177)
-        pole3 = flagpole.Pole(8505, 217)
-        pole4 = flagpole.Pole(8505, 257)
-        pole5 = flagpole.Pole(8505, 297)
-        pole6 = flagpole.Pole(8505, 337)
-        pole7 = flagpole.Pole(8505, 377)
-        pole8 = flagpole.Pole(8505, 417)
-        pole9 = flagpole.Pole(8505, 450)
+        pole0 = flagpole.Pole(450, 97)
+        pole1 = flagpole.Pole(450, 137)
+        pole2 = flagpole.Pole(450, 177)
 
-        finial = flagpole.Finial(8507, 97)
+        self.brick_group.add(bricks.Brick(430, 217))
 
         self.flag_pole_group = pg.sprite.Group(self.flag,
-                                               finial,
                                                pole0,
                                                pole1,
                                                pole2,
-                                               pole3,
-                                               pole4,
-                                               pole5,
-                                               pole6,
-                                               pole7,
-                                               pole8,
-                                               pole9)
+                                               )
 
 
     def setup_enemies(self):    #<- self.start_up <- flip_state <- tools.Control
@@ -446,6 +432,7 @@ class Level1(tools._State): #<- flip_state <- tools.Control
         self.handle_states(keys)    #
         self.check_if_time_out()
         self.check_if_achieve_score()   #是否到达到下一关分数
+        self.check_if_achieve_flag()
         self.blit_everything(surface)
         self.sound_manager.update(self.game_info, self.mario)
 
@@ -1529,7 +1516,11 @@ class Level1(tools._State): #<- flip_state <- tools.Control
 
 
     def update_viewport(self):
-        if self.current_time % 3 == 0:
+        if self.game_info['round'] >= 2:
+            slide_vel = 2
+        else:
+            slide_vel = 3
+        if self.current_time % slide_vel == 0:
             self.viewport.y -= 1
         # """Changes the view of the camera"""
         # third = self.viewport.x + self.viewport.w//3    # width
@@ -1609,7 +1600,14 @@ class Level1(tools._State): #<- flip_state <- tools.Control
                 self.enemy_group.add(enemy)
 
     def check_if_achieve_score(self):
-        if(self.game_info[c.SCORE] >= self.achieve_score):
+        if self.game_info[c.SCORE] >= self.achieve_score:
+            self.next = c.LOAD_SCREEN
+            self.done = True
+            self.game_info[c.SCORE] = 0
+            self.game_info['round'] += 1
+
+    def check_if_achieve_flag(self):
+        if self.mario.rect.x < 460 and self.mario.rect.x > 440 and self.mario.rect.y <= 217:
             self.next = c.LOAD_SCREEN
             self.done = True
             self.game_info[c.SCORE] = 0

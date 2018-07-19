@@ -112,7 +112,7 @@ class Enemy(pg.sprite.Sprite):
         self.rect.x += self.x_vel
         self.y_vel += self.gravity
 
-        if self.rect.y > 600:
+        if self.rect.y > c.GROUND_HEIGHT:
             self.kill()
 
 
