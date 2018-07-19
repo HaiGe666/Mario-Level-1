@@ -167,9 +167,10 @@ class Level1(tools._State): #<- flip_state <- tools.Control
 
         self.brick_group = pg.sprite.Group()
 
-        if self.game_info['round'] < 5:
+        if self.game_info['round'] <= 3:
+            highest_brick_row_mul = min(self.game_info['round'], 3)
             start_col = 0
-            for row in range(c.GROUND_HEIGHT - 100, 200, -140):
+            for row in range(c.GROUND_HEIGHT - 100, c.GROUND_HEIGHT - 900 * highest_brick_row_mul, -140):
                 for col in range(start_col, 900, 43):
                     if random.randint(0,100)%2 == 0:
                         if random.randint(0,100) % 4 == 0:
@@ -313,13 +314,15 @@ class Level1(tools._State): #<- flip_state <- tools.Control
 
     def setup_flag_pole(self):  #<- self.start_up <- flip_state <- tools.Control
         """Creates the flag pole at the end of the level"""
-        self.flag = flagpole.Flag(450, 97)
+        highest_flag_row_mul = min(self.game_info['round'], 3)
 
-        pole0 = flagpole.Pole(450, 97)
-        pole1 = flagpole.Pole(450, 137)
-        pole2 = flagpole.Pole(450, 177)
+        self.flag = flagpole.Flag(450, c.GROUND_HEIGHT - 900 * highest_flag_row_mul - 120)
 
-        self.brick_group.add(bricks.Brick(430, 217))
+        pole0 = flagpole.Pole(450, c.GROUND_HEIGHT - 900 * highest_flag_row_mul - 120)
+        pole1 = flagpole.Pole(450, c.GROUND_HEIGHT - 900 * highest_flag_row_mul - 80)
+        pole2 = flagpole.Pole(450, c.GROUND_HEIGHT - 900 * highest_flag_row_mul - 40)
+
+        self.brick_group.add(bricks.Brick(430, c.GROUND_HEIGHT - 900 * highest_flag_row_mul))
 
         self.flag_pole_group = pg.sprite.Group(self.flag,
                                                pole0,
@@ -1516,10 +1519,12 @@ class Level1(tools._State): #<- flip_state <- tools.Control
 
 
     def update_viewport(self):
-        if self.game_info['round'] >= 2:
+        if self.game_info['round'] == 1:
+            slide_vel = 3
+        elif self.game_info['round'] == 2:
             slide_vel = 2
         else:
-            slide_vel = 3
+            slide_vel = 1
         if self.current_time % slide_vel == 0:
             self.viewport.y -= 1
         # """Changes the view of the camera"""
@@ -1607,7 +1612,8 @@ class Level1(tools._State): #<- flip_state <- tools.Control
             self.game_info['round'] += 1
 
     def check_if_achieve_flag(self):
-        if self.mario.rect.x < 460 and self.mario.rect.x > 440 and self.mario.rect.y <= 217:
+        achieve_point_y = c.GROUND_HEIGHT - 900 * min(self.game_info['round'], 3)
+        if self.mario.rect.x < 460 and self.mario.rect.x > 440 and self.mario.rect.y <= achieve_point_y:
             self.next = c.LOAD_SCREEN
             self.done = True
             self.game_info[c.SCORE] = 0
