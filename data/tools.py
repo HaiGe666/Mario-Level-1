@@ -1,5 +1,3 @@
-__author__ = 'justinarmstrong'
-
 import os
 import pygame as pg
 
